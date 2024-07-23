@@ -1,0 +1,48 @@
+{
+  "name": "plasmic-component-library-template",
+  "version": "0.1.0",
+  "description": "Template creating component library to use with Plasmic",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "files": [
+    "dist"
+  ],
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/index.mjs",
+      "limit": "10 KB"
+    }
+  ],
+  "scripts": {
+    "build": "tsup-node src/index.tsx --dts --format esm,cjs --target es2019",
+    "test": "TEST_CWD=`pwd` yarn --cwd=../.. test --passWithNoTests",
+    "prepublishOnly": "npm run build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "@types/dlv": "^1.1.2",
+    "@types/node": "^17.0.14",
+    "@types/react": "^18.2.33",
+    "size-limit": "^7.0.8",
+    "tslib": "^2.3.1",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.3.0",
+    "use-deep-compare": "^1.2.1"
+  },
+  "peerDependencies": {
+    "@plasmicapp/host": "1.0.197",
+    "@plasmicapp/query": "0.1.79",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  }
+}
