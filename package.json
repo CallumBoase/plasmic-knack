@@ -1,7 +1,7 @@
 {
-  "name": "plasmic-component-library-template",
-  "version": "0.1.0",
-  "description": "Template creating component library to use with Plasmic",
+  "name": "plasmic-knack",
+  "version": "0.0.1",
+  "description": "Components for working with the Knack api from Plasmic",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.mjs",
@@ -37,7 +37,10 @@
   },
   "dependencies": {
     "@supabase/ssr": "^0.3.0",
-    "use-deep-compare": "^1.2.1"
+    "@types/uuid": "^10.0.0",
+    "knack-api-helper": "^2.2.6",
+    "use-deep-compare": "^1.2.1",
+    "uuid": "^10.0.0"
   },
   "peerDependencies": {
     "@plasmicapp/host": "1.0.197",
