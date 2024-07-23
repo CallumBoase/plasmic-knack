@@ -1,98 +1,39 @@
-# Plasmic component library template
+# Plasmic-Knack
 
-This is a template for creating a React component library to use with Plasimc. It uses Typescript and bundles to Typescript and Javascript.
+Component (Knack Provider) for interacting with the Knack API from Plasmic.
 
-It is based on the way that Plasmic bundle's it's own internal component library packages.
+The Knack Provider component uses view-based authentication and can be used to:
+* Fetch records
+* Create records
+* Update records
+* Delete records
 
-## Getting started
+Optimistic mutations are available (optional) so you can create seamless user experiences that are not normally available in a Knack app.
 
-1. Clone or fork this repo
-2. Go to `package.json` and set "name" to whatever you want to call your component library
-3. Run `npm install` to install dependencies
+Components or pages you make can be published back to your Knack app using the instructions in [plasmic-codegen-into-html-with-vite](https://github.com/CallumBoase/plasmic-codegen-into-html-with-vite).
 
-## How to use
-1. Add your own components to the `src` folder instead of the example component.
-2. Export your components in `src/index.ts` like the example
-3. Run `npm run build` to build the library. It will be built in the `dist` folder
+## How to create a custom-view for your Knack app
+In this section we explain how to use Plasmic-Knack to create a custom view to embed into your Knack app.
 
-## Testing in a Plasmic nextjs Pages router app
-
-In this project
-1. Follow steps 1-3 in the `How To use` section above
-2. Run `npm pack` to package the library to .tgz (which simulates what happens when you live-publish to npm but just saves a local file you can npm install later)
-
-In your Plasmic project
-1. Make sure you've already got a repo set up, connected with a Plasmic app and that your Plasmic app is using your app as it's custom app host
-2. (If previously installed) Uninstall the library (`npm uninstall your-library-name`)
-3. Run `npm install ./path/to/your-library-name-X.X.X.tgz` to install the library based on the local .tgz file
-4. If CSS is used in your component/s: create an `_app.tsx` file in `./pages/_app.tsx` and import your CSS files as required
-  * If using codegen nextjs
-    ```typescript
-    import { PlasmicRootProvider } from "@plasmicapp/react-web";
-    import type { AppProps } from "next/app";
-    import Head from "next/head";
-  
-    //Here we import the CSS from your library
-    import 'your-library-name/dist/path/to/css/file';
-  
-    export default function MyApp({ Component, pageProps }: AppProps) {
-      return (
-        <PlasmicRootProvider Head={Head}>
-          <Component {...pageProps} />
-        </PlasmicRootProvider>
-      );
-    }
+1. Create a new Plasmic app in the Plasmic user interface.
+2. Create a new code repo on your local machine and set it up as per [plasmic-codegen-into-html-with-vite](https://github.com/CallumBoase/plasmic-codegen-into-html-with-vite). See the [How To Use instructions](https://github.com/CallumBoase/plasmic-codegen-into-html-with-vite?tab=readme-ov-file#how-to-use) there.
+    * Follow instructions in all sections except the section called "Registering custom components for use in Plasmic studio"
+3.  In your repo, install `plasmic-knack` by running this command in terminal:
+    ```bash
+    npm install plasmic-knack
     ```
-  * If using loader API with nextjs
-    ```typescript
-    import type { AppProps } from "next/app";
-
-    //Here we import the bundled CSS from the library
-    import 'your-library-name/dist/path/to/css/file';
-    
-    export default function MyApp({ Component, pageProps }: AppProps) {
-      return (
-        <Component {...pageProps} />
-      );
-    }
-    ```
-5. Register the components for use in plasmic studio.
- * If using codegen with nextjs, `plasmic-host.tsx`:
-   ```typescript
-   import * as React from 'react';
-   import { PlasmicCanvasHost, registerComponent } from '@plasmicapp/react-web/lib/host';
- 
-   import { YourComponent, yourComponentMeta } from "your-library-name";
- 
-   registerComponent(YourComponent, yourComponentMeta);
- 
-   export default function PlasmicHost() {
-     return <PlasmicCanvasHost />;
-   }
-   ```
- * If using loader API with nextjs, `plasmic-init.ts`:
-    ```typescript
-    import { initPlasmicLoader } from "@plasmicapp/loader-nextjs";
-
-    import { YourComponent, yourComponentMeta } from "your-library-name";
-    
-    export const PLASMIC = initPlasmicLoader({
-      projects: [
-        {
-          id: "your-project-id",
-          token: "your-project-token",
-        },
-      ],
-    
-      preview: false,
-    });
-
-    PLASMIC.registerComponent(YourComponent, yourComponentMeta);
-   ```
-
-## Publishing
-
-Once ready, you can publish to npm
-1. Change version number in `package.json`
-2. Run `npm publish` in terminal
-3. Recommended: in your github repo create a release and tag corresponding with the commit that you published
+4. Register the `plasmic-knack` component so you can use it in Plasmic studio:
+    1. Make sure you've already [configured your custom app host](https://github.com/CallumBoase/plasmic-codegen-into-html-with-vite?tab=readme-ov-file#configuring-your-plasmic-app-to-use-this-repo-as-its-custom-app-host)
+    2. Go to `./src/plasmic-host.tsx` and add these lines:
+        ```tsx
+        //Add these imports near the top of your file
+        import { KnackProvider, KnackProviderMeta } from "plasmic-knack"
+        ```
+        ```tsx
+        //Register custom components below all imports
+        registerComponent(KnackProvider, KnackProviderMeta);
+        ```
+    3. Make sure your dev server is running (`npm run dev`) and then Refresh Plasmic studio. You should see the new `KnackProvider` component ready to use under "Custom Components"
+5. Create components that use `KnackProvider` in Plasmic studio then follow the [Development Workflow](https://github.com/CallumBoase/plasmic-codegen-into-html-with-vite?tab=readme-ov-file#development-workflow) to attach them to the browser window and test them.
+6. [Deploy your repo to Netlify](https://github.com/CallumBoase/plasmic-codegen-into-html-with-vite?tab=readme-ov-file#configuring-netlify-deployment) 
+7. Import your custom component into your Knack app and use as required (more info coming soon)

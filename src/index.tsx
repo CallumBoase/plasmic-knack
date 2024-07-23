@@ -1,2 +1,2 @@
-export { ExampleComponentMeta } from "./ExampleComponent/registerComponentMeta";
-export { ExampleComponent } from "./ExampleComponent";
+export { KnackProvider } from "./KnackProvider";
+export { KnackProviderMeta } from "./KnackProvider/registerComponentMeta";
