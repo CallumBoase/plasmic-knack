@@ -153,9 +153,8 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
 
     //When fetchData function is rebuilt, re-fetch the data
     useEffect(() => {
-      console.log('fetchData changed')
       mutate();
-    }, [fetchData]);
+    }, [applicationId, userToken, getRecordsView, getRecordsScene, memoizedFilters, filterOperator]);
 
     //Function that just returns the data unchanged
     //To pass in as an optimistic update function when no optimistic update is desired
@@ -167,7 +166,6 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
     //Function to add a row to existing data optimistically
     const addRecordOptimistically = useCallback(
       (currentRecords: Records, optimisticRecord: RecordWithoutId | Record) => {
-        console.log('addRecordOptimistically', currentRecords, optimisticRecord)
         const optimisticRecords = [...(currentRecords || []), optimisticRecord];
         return optimisticRecords;
       },
