@@ -1,6 +1,6 @@
 {
   "name": "plasmic-knack",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Components for working with the Knack api from Plasmic",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
