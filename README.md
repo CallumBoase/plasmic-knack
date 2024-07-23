@@ -1,10 +1,25 @@
-# Plasmic component library template
+# Plasmic-Knack
 
-This is a template for creating a React component library to use with Plasimc. It uses Typescript and bundles to Typescript and Javascript.
+Component (Knack Provider) for interacting with the Knack API from Plasmic.
 
-It is based on the way that Plasmic bundle's it's own internal component library packages.
+The Knack Provider component uses view-based authentication and can be used to:
+* Fetch records
+* Create records
+* Update records
+* Delete records
+
+Optimistic mutations are available (optional) so you can create seamless user experiences that are not normally available in a Knack app.
+
+Components or pages you make can be published back to your Knack app using the instructions in [plasmic-codegen-into-html-with-vite](https://github.com/CallumBoase/plasmic-codegen-into-html-with-vite).
 
 ## Getting started
+
+1. In the Plasmic web interface:
+    1. Create a new Plasmic app
+    2. Rename your app
+    3. Click "Publish" button at top-right
+    4. Add a "Push to Github" step, publishing to a new repo, nextjs, loader (recommended) method, typescript
+    5. Click "publish" and wait for the build to complete
 
 1. Clone or fork this repo
 2. Go to `package.json` and set "name" to whatever you want to call your component library
