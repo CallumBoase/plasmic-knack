@@ -4,7 +4,7 @@ import { KnackProviderProps } from ".";
 //Component metadata for registration in Plasmic
 export const KnackProviderMeta : CodeComponentMeta<KnackProviderProps> = {
   name: "KnackProvider",
-  importPath: "./index",
+  importPath: "plasmic-knack",
   providesData: true,
   props: {
     queryName: {
