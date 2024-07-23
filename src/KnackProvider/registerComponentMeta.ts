@@ -27,6 +27,40 @@ export const KnackProviderMeta : CodeComponentMeta<KnackProviderProps> = {
       type: "string",
       required: true,
     },
+    filterOperator: {
+      type: "choice",
+      description: "Filter operator to use when fetching records from Knack",
+      required: true,
+      options: [
+        "and",
+        "or"
+      ],
+      defaultValue: "and",
+    },
+    filters: {
+      type: "array",
+      description: 'Filters to add when fetching records from Knack.',
+      itemType: {
+        type: "object",
+        fields: {
+          field: {
+            type: "string",
+            required: true,
+            displayName: "Field Id to filter by eg field_23"
+          },
+          operator: {
+            type: "string",
+            required: true,
+            displayName: "Filter operator (eg 'is', 'is not', 'contains')"
+          },
+          value: {
+            type: "string",
+            required: false,
+            displayName: "Value to filter by (usually required)"
+          }
+        }
+      }
+    },
     addRecordView: {
       type: "string",
       required: true,

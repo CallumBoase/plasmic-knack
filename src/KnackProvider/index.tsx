@@ -1,7 +1,8 @@
-import React, { useState, forwardRef, useCallback, useImperativeHandle } from "react";
+import React, { useState, useEffect, forwardRef, useCallback, useImperativeHandle } from "react";
 import { useMutablePlasmicQueryData } from "@plasmicapp/query";
 import { DataProvider } from "@plasmicapp/host";
 import { v4 as uuid } from "uuid";
+import { useDeepCompareMemo } from "use-deep-compare";
 
 //@ts-ignore
 import KnackAPI from "knack-api-helper";
@@ -32,6 +33,14 @@ type KnackProviderError = {
   optimisticRecord: Record | RecordWithoutId | null;
 }
 
+type Filter = {
+  field: string;
+  operator: string;
+  value: string;
+}
+
+type FilterOperator = 'and' | 'or';
+
 interface Actions {
   addRecord(recordForKnack: any, optimisticRecord: any): Promise<Record | KnackProviderError>;
   editRecord(recordForKnack: any, optimisticRecord: any): Promise<Record | KnackProviderError>;
@@ -44,6 +53,8 @@ export interface KnackProviderProps {
   userToken: string;
   getRecordsView: string;
   getRecordsScene: string;
+  filterOperator: FilterOperator;
+  filters?: Filter[];
   addRecordView: string;
   addRecordScene: string;
   editRecordView: string;
@@ -65,6 +76,8 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
       userToken,
       getRecordsView,
       getRecordsScene,
+      filterOperator,
+      filters,
       addRecordView,
       addRecordScene,
       editRecordView,
@@ -77,20 +90,12 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
       className,
     } = props;
 
-    // const [mutationError, setMutationError] = useState<string | null>(null);
     const [isMutating, setIsMutating] = useState<boolean>(false);
     const [getRecordsError, setGetRecordsError] = useState<KnackProviderError | null>(null);
+    const memoizedFilters = useDeepCompareMemo(() => filters, [filters]);
 
-    //Use the useMutablePlasmicQueryData hook to fetch the data
-    //Works very similar to useSWR
-    const {
-      data,
-      //The error object from useSWR contains errors from mutation and fetch
-      //We don't use it because we customise behaviour below, to give separate fetch & mutation behavior
-      //error,
-      mutate,
-      isLoading,
-    } = useMutablePlasmicQueryData(queryName, async () => {
+    //Function to fetch records from Knack
+    const fetchData = useCallback(async () => {
 
       setIsMutating(false);
       setGetRecordsError(null);
@@ -106,6 +111,10 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
         const res = await knackAPI.getMany({
           view: getRecordsView,
           scene: getRecordsScene,
+          filters: memoizedFilters ? {
+            match: filterOperator || 'and',
+            rules: memoizedFilters
+          } : undefined
         });
   
         const records = res.records;
@@ -126,12 +135,27 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
         onError(knackProviderError);
         throw(err);
       }
+    }, [applicationId, userToken, getRecordsView, getRecordsScene, memoizedFilters, filterOperator, onError]);
 
-      
-      
-    }, {
+
+    //Use the useMutablePlasmicQueryData hook to fetch the data
+    //Works very similar to useSWR
+    const {
+      data,
+      //The error object from useSWR contains errors from mutation and fetch
+      //We don't use it because we customise behaviour below, to give separate fetch & mutation behavior
+      //error,
+      mutate,
+      isLoading,
+    } = useMutablePlasmicQueryData(queryName, fetchData, {
       shouldRetryOnError: false
     });
+
+    //When fetchData function is rebuilt, re-fetch the data
+    useEffect(() => {
+      console.log('fetchData changed')
+      mutate();
+    }, [fetchData]);
 
     //Function that just returns the data unchanged
     //To pass in as an optimistic update function when no optimistic update is desired
