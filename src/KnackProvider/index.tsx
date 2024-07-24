@@ -95,7 +95,7 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
     const memoizedFilters = useDeepCompareMemo(() => filters, [filters]);
 
     //Function to fetch records from Knack
-    const fetchData = useCallback(async () => {
+    const fetchData = async () => {
 
       setIsMutating(false);
       setGetRecordsError(null);
@@ -135,11 +135,14 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
         onError(knackProviderError);
         throw(err);
       }
-    }, [applicationId, userToken, getRecordsView, getRecordsScene, memoizedFilters, filterOperator, onError]);
+    }
 
 
     //Use the useMutablePlasmicQueryData hook to fetch the data
     //Works very similar to useSWR
+    //Note that we pass filters along with queryName to ensure we create a new cache when filters change
+    //Avoiding issues like flash of old content while data is fetching with new filters
+    //And the useMutablePlasmicQueryData not being recalled so an old version of fetchData with wrong filters is used
     const {
       data,
       //The error object from useSWR contains errors from mutation and fetch
@@ -147,14 +150,14 @@ export const KnackProvider = forwardRef<Actions, KnackProviderProps>(
       //error,
       mutate,
       isLoading,
-    } = useMutablePlasmicQueryData(queryName, fetchData, {
+    } = useMutablePlasmicQueryData([queryName, filterOperator, JSON.stringify(filters)], fetchData, {
       shouldRetryOnError: false
     });
 
     //When fetchData function is rebuilt, re-fetch the data
     useEffect(() => {
       mutate();
-    }, [applicationId, userToken, getRecordsView, getRecordsScene, memoizedFilters, filterOperator]);
+    }, [applicationId, userToken, getRecordsView, getRecordsScene, filterOperator, memoizedFilters]);
 
     //Function that just returns the data unchanged
     //To pass in as an optimistic update function when no optimistic update is desired
